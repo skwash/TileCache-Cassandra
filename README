@@ -1,0 +1,4 @@
+Todos:
+- Add tests
+- Make sure it really works
+- Refine dependency on PyCassa "borrowed" code in Cassandra.py
