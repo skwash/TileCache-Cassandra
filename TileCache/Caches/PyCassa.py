@@ -1,9 +1,9 @@
-# BSD Licensed, Copyright (c) 2010 - Josh Hansen
-# Only works with PyCassa 0.3 & Cassandra 0.6 for now.
+# MIT Licensed, Copyright (c) 2010 - Josh Hansen
+# Works with latest PyCassa (>=0.4.2) and Cassandra (>0.7.0-beta1)
 
-import pycassa
 from TileCache.Cache import Cache
-import time
+import sys, time
+import pycassa
 from pycassa import NotFoundException
 
 class PyCassa(Cache):
@@ -16,9 +16,8 @@ class PyCassa(Cache):
         if type(servers) is str: 
             servers = map(str.strip, servers.split(","))
             
-        self.client = pycassa.connect(servers)
-
-        self.cf = pycassa.ColumnFamily(self.client, self.keyspace, self.column_family, super=False)
+        self.client = pycassa.connect(keyspace, servers)
+        self.cf = pycassa.ColumnFamily(self.client, column_family)
         
     def getKey(self, tile):
         
@@ -27,19 +26,23 @@ class PyCassa(Cache):
     def get(self, tile):
         
         rowkey,colkey = self.getKey(tile)
+        if tile.layer.debug:
+            sys.stderr.write("Get [ Layer: %s, RowKey: %s, ColKey: %s]\n" % (tile.layer.name, rowkey, colkey))
             
         try:
             tile.data = self.cf.get(rowkey, [colkey])
         except NotFoundException:
             return None
         
-        return tile.data
+        return tile.data[colkey]
     
     def set(self, tile, data):
         if self.readonly:
             return data
             
         rowkey,colkey = self.getKey(tile)
+        if tile.layer.debug:
+            sys.stderr.write("Set [ Layer: %s, RowKey: %s, ColKey: %s]\n" % (tile.layer.name, rowkey, colkey))
         
         self.cf.insert(rowkey, { colkey : data })
         
@@ -47,6 +50,8 @@ class PyCassa(Cache):
     
     def delete(self, tile):
         rowkey,colkey = self.getKey(tile)
+        if tile.layer.debug:
+            sys.stderr.write("Delete [ Layer: %s, RowKey: %s, ColKey: %s]\n" % (tile.layer.name, rowkey, colkey))
         
         self.cf.remove(rowkey, [colkey])
 
