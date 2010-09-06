@@ -1,9 +1,8 @@
-Adds the abilty to use Cassandra as a Cache for TileCache ( http://tilecache.org/ ). Provides two possible drivers: Cassandra.py and PyCassa.py. The former uses the Cassandra/Thrift libraries directly, and the latter uses PyCassa ( http://github.com/vomjom/pycassa/ ).
+Adds the abilty to use Cassandra as a Cache for TileCache ( http://tilecache.org/ ). 
+Requires PyCassa ( http://github.com/pycassa/pycassa )
 
 Todos:
 - Add tests
 - Make sure it really works.
-- Refine dependency on PyCassa "borrowed" code in Cassandra.py
 - Add some examples (Using OpenLayers)
-- Create connection using non-PyCassa code. (IE: eliminate the dependency on pycassa.connection.create_client_transport)
 
