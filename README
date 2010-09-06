@@ -1,8 +1,36 @@
 Adds the abilty to use Cassandra as a Cache for TileCache ( http://tilecache.org/ ). 
-Requires PyCassa ( http://github.com/pycassa/pycassa )
 
-Todos:
+Requires
+  - Cassandra (trunk as of 5-Sep-2010) - http://cassandra.apache.org
+  - PyCassa (0.4.2+) - http://github.com/pycassa/pycassa
+  - TileCache - http://tilecache.org
+
+To Dos
 - Add tests
-- Make sure it really works.
-- Add some examples (Using OpenLayers)
+
+Getting Started
+
+Setup your Keyspace and ColumnFamily in Cassandra
+
+$ bin/cassandra-cli --host localhost --port 9160
+[default@unknown] create keyspace TileCache with replication_factor=1
+[default@unknown] use TileCache
+[default@unknown] create column family TileCacheStd with column_type='Standard' and comparator = 'UTF8Type'
+
+
+To Test Your Setup
+
+$ python
+>>> import pycassa
+>>> client = pycassa.connect('TileCache', ['localhost:9160'])
+>>> cf = pycassa.ColumnFamily(client, 'TileCacheStd')
+
+
+Edit Your tilecache.cfg:
+
+[cache]
+type=PyCassa
+servers=127.0.0.1:9160
+keyspace=TileCache
+column_family=TileCacheStd
 
